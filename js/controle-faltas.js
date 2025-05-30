@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'ic': { percPorFalta: 2.78, nome: 'IMUNOLOGIA CLÍNICA' },
         'ss': { percPorFalta: 0.925, nome: 'SAÚDE E SOCIEDADE III' },
         'farma': { percPorFalta: 1.39, nome: 'FARMACOLOGIA I' },
-        'ff': { percPorFalta: 0.4725, nome: 'FISIOLOGIA E FISIOPATOLOGIA III' }
+        'ff': { percPorFalta: 0.4720, nome: 'FISIOLOGIA E FISIOPATOLOGIA III' }
     };
 
     function calcularFaltas(disciplinaIdRef) {
