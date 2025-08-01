@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HABILIDADES MÉDICAS II - Calculadora de Notas</title>
+    <title>HABILIDADES MÉDICAS III - Calculadora de Notas</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,7 +13,7 @@
     <header>
         <div class="container">
             <h1>Calculadora de Notas</h1>
-            <h2>3° Período</h2>
+            <h2>4° Período</h2>
         </div>
     </header>
 
@@ -22,7 +22,7 @@
         <a href="calculadora-hub.html" class="voltar">← Voltar para página inicial</a>
         
         <div class="calculadora">
-            <h2>HABILIDADES MÉDICAS II</h2>
+            <h2>HABILIDADES MÉDICAS III</h2>
             
      <form id="calculadora-form">
             <div class="grade-input-section">
@@ -44,14 +44,14 @@
                 <div class="p2-components-details" id="p2ComponentsDetailsHabilidades" style="display: none;">
                    <div class="form-group">
                             <label for="p2-cateterismo">
-                                <span>CATETERISMO NASOENTÉRICO E NASOGÁSTRICO</span>
+                                <span> TRAUMATO-ORTOPÉDICAS SIMPLES BANDAGEM E IMOBILIZAÇÃO</span>
                                 <span class="points-label">(10 pontos)</span>
                             </label>
                             <input type="number" id="p2-cateterismo" min="0" max="10" step="0.01" placeholder="Digite a nota do cateterismo">
                         </div>
                         <div class="form-group">
                             <label for="p2-curativo">
-                                <span>CURATIVO</span>
+                                <span> PUNÇÃO VENOSA / ADMINISTRAÇÃO DE MEDICAMENTOS / DESCARTE DE MATERIAL</span>
                                 <span class="points-label">(10 pontos)</span>
                             </label>
                             <input type="number" id="p2-curativo" min="0" max="10" step="0.01" placeholder="Digite a nota do curativo">
@@ -61,14 +61,14 @@
 
             <div class="grade-input-section">
                 <div class="grade-input-group main-grade">
-                    <label for="p3">P3 - Abdome Agudo (10 pontos):</label>
+                    <label for="p3">P3 -  Cateterismo vesical  (10 pontos):</label>
                     <input type="number" id="p3" min="0" max="10" step="0.01" placeholder="Digite a nota da P3">
                 </div>
             </div>
 
             <div class="grade-input-section">
                 <div class="grade-input-group main-grade">
-                    <label for="p4">P4 - Intubação Orotraqueal (10 pontos):</label>
+                    <label for="p4">P4 -  Sutura simples, Calçamento de luvas estéreis e Anestesia local (10 pontos):</label>
                     <input type="number" id="p4" min="0" max="10" step="0.01" placeholder="Digite a nota da P4">
                 </div>
             </div>
@@ -257,8 +257,8 @@
                     let targetP2GradeForComps = notasAlvoParaPx['P2'] !== undefined ? notasAlvoParaPx['P2'] : (isPossibleToReach7 ? 7 : 10);
                     
                     const p2CompsConfig = [
-                        {nome: "Cateterismo Nasoentérico e Nasogástrico", max: 10, currentStr: p2CateterismoStr, id: 'p2-cateterismo'},
-                        {nome: "Curativo", max: 10, currentStr: p2CurativoStr, id: 'p2-curativo'}
+                        {nome: "Traumato-ortopédicas simples bandagem e imobilização", max: 10, currentStr: p2CateterismoStr, id: 'p2-cateterismo'},
+                        {nome: "Punção Venosa/Administração medicamentos/Descarte de material", max: 10, currentStr: p2CurativoStr, id: 'p2-curativo'}
                     ];
 
                     let filledP2Cateterismo = p2CateterismoStr !== '' ? parseFloat(p2CateterismoStr) : null;
@@ -273,16 +273,16 @@
                         
                         if (filledP2Cateterismo !== null && filledP2Curativo === null) { // Cateterismo filled, Curativo missing
                             let neededCurativo = sumOfTargetScoresForP2Comps - filledP2Cateterismo;
-                            htmlNotasNecessarias += `<li>Cateterismo Nasoentérico e Nasogástrico: <strong>${formatarNota(filledP2Cateterismo)}</strong> (de 10) (já preenchido)</li>`;
-                            htmlNotasNecessarias += `<li>Curativo: <strong>${formatarNota(Math.max(0, Math.min(10, neededCurativo)))}</strong> (de 10)</li>`;
+                            htmlNotasNecessarias += `<li>Traumato-ortopédicas simples bandagem e imobilização: <strong>${formatarNota(filledP2Cateterismo)}</strong> (de 10) (já preenchido)</li>`;
+                            htmlNotasNecessarias += `<li>Punção Venosa/Administração medicamentos/Descarte de material: <strong>${formatarNota(Math.max(0, Math.min(10, neededCurativo)))}</strong> (de 10)</li>`;
                         } else if (filledP2Cateterismo === null && filledP2Curativo !== null) { // Curativo filled, Cateterismo missing
                             let neededCateterismo = sumOfTargetScoresForP2Comps - filledP2Curativo;
-                            htmlNotasNecessarias += `<li>Cateterismo Nasoentérico e Nasogástrico: <strong>${formatarNota(Math.max(0, Math.min(10, neededCateterismo)))}</strong> (de 10)</li>`;
-                            htmlNotasNecessarias += `<li>Curativo: <strong>${formatarNota(filledP2Curativo)}</strong> (de 10) (já preenchido)</li>`;
+                            htmlNotasNecessarias += `<li>Traumato-ortopédicas simples bandagem e imobilização: <strong>${formatarNota(Math.max(0, Math.min(10, neededCateterismo)))}</strong> (de 10)</li>`;
+                            htmlNotasNecessarias += `<li>Punção Venosa/Administração medicamentos/Descarte de material: <strong>${formatarNota(filledP2Curativo)}</strong> (de 10) (já preenchido)</li>`;
                         } else if (filledP2Cateterismo === null && filledP2Curativo === null) { // Both missing
                             let neededPerComp = sumOfTargetScoresForP2Comps / 2;
-                            htmlNotasNecessarias += `<li>Cateterismo Nasoentérico e Nasogástrico: <strong>${formatarNota(Math.max(0, Math.min(10, neededPerComp)))}</strong> (de 10)</li>`;
-                            htmlNotasNecessarias += `<li>Curativo: <strong>${formatarNota(Math.max(0, Math.min(10, neededPerComp)))}</strong> (de 10)</li>`;
+                            htmlNotasNecessarias += `<li>Traumato-ortopédicas simples bandagem e imobilização: <strong>${formatarNota(Math.max(0, Math.min(10, neededPerComp)))}</strong> (de 10)</li>`;
+                            htmlNotasNecessarias += `<li>Punção Venosa/Administração medicamentos/Descarte de material: <strong>${formatarNota(Math.max(0, Math.min(10, neededPerComp)))}</strong> (de 10)</li>`;
                         }
                         // If both are filled, P2 is calculated directly, no "needed" shown here.
                     }

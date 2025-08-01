@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FARMACOLOGIA II - Calculadora de Notas</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Calculadora de Notas</h1>
+            <h2>4° Período</h2>
+        </div>
+    </header>
+
+    <main class="container">
+        <br>
+        <a href="calculadora-hub.html" class="voltar">← Voltar para página inicial</a>
+
+        <div class="calculadora">
+            <h2>FARMACOLOGIA II</h2>
+
+            <form id="calculadora-form">
+                <div class="grade-input-section">
+                    <div class="grade-input-group main-grade p1-toggle-header" data-target-details="p1ComponentsDetailsFarmacologia">
+                        <label for="p1-completa">P1 (10 pontos):</label>
+                        <input type="number" id="p1-completa" min="0" max="10" step="0.01" placeholder="Digite a nota da P1">
+                        <span class="p1-components-label-action">CALCULAR P1 POR COMPONENTES</span>
+                        <button type="button" class="expand-arrow-button">
+                            <span class="arrow-icon">▼</span>
+                        </button>
+                    </div>
+                    <div class="p1-components-details" id="p1ComponentsDetailsFarmacologia" style="display: none;">
+                        <div class="form-group">
+                            <label for="p1-aval-escrita">
+                                <span>AVALIAÇÃO ESCRITA 1</span>
+                                <span class="points-label">(10 pontos) - peso 5</span>
+                            </label>
+                            <input type="number" id="p1-aval-escrita" min="0" max="10" step="0.01" placeholder="Digite a nota da avaliação escrita 1">
+                        </div>
+                        <div class="form-group">
+                            <label for="p1-media-outras-final">
+                                <span>MÉDIA DE OUTRAS ATIVIDADES P1</span>
+                                <span class="points-label">(10 pontos) - peso 2</span>
+                            </label>
+                            <input type="number" id="p1-media-outras-final" min="0" max="10" step="0.01" placeholder="Digite a nota da média de outras atividades P1">
+                        </div>
+                        <div class="sub-component-group">
+                            <p class="sub-component-title">Ou calcule a Média de Outras Atividades P1:</p>
+                            <div class="form-group">
+                                <label for="p1-ed-1">
+                                    <span>Estudo Dirigido 1</span>
+                                    <span class="points-label">(10 pontos)</span>
+                                </label>
+                                <input type="number" id="p1-ed-1" min="0" max="10" step="0.01" placeholder="Nota do Estudo Dirigido 1">
+                            </div>
+                            <div class="form-group">
+                                <label for="p1-painel-1">
+                                    <span>Painel Interativo 1</span>
+                                    <span class="points-label">(10 pontos)</span>
+                                </label>
+                                <input type="number" id="p1-painel-1" min="0" max="10" step="0.01" placeholder="Nota do Painel Interativo 1">
+                            </div>
+                            <div class="form-group">
+                                <label for="p1-situacao-1">
+                                    <span>Situação Clínica Integrada 1</span>
+                                    <span class="points-label">(10 pontos)</span>
+                                </label>
+                                <input type="number" id="p1-situacao-1" min="0" max="10" step="0.01" placeholder="Nota da Situação Clínica Integrada 1">
+                            </div>
+                            </div>
+                    </div>
+                </div>
+
+                <div class="grade-input-section">
+                    <div class="grade-input-group main-grade p2-toggle-header" data-target-details="p2ComponentsDetailsFarmacologiaP2">
+                        <label for="p2-completa">P2 (10 pontos):</label>
+                        <input type="number" id="p2-completa" min="0" max="10" step="0.01" placeholder="Digite a nota da P2">
+                        <span class="p2-components-label-action">CALCULAR P2 POR COMPONENTES</span>
+                        <button type="button" class="expand-arrow-button">
+                            <span class="arrow-icon">▼</span>
+                        </button>
+                    </div>
+                    <div class="p2-components-details" id="p2ComponentsDetailsFarmacologiaP2" style="display: none;">
+                        <div class="form-group">
+                           <label for="p2-avaliacao-escrita">
+                           <span>AVALIAÇÃO ESCRITA 2</span>
+                           <span class="points-label">(10 pontos) - peso 5</span>
+                           </label>
+                            <input type="number" id="p2-avaliacao-escrita" min="0" max="10" step="0.01" placeholder="Digite a nota da avaliação escrita 2">
+                        </div>
+                        <div class="form-group">
+                            <label for="p2-media-outras-final">
+                                <span>MÉDIA DE OUTRAS ATIVIDADES P2</span>
+                                <span class="points-label">(10 pontos) - peso 2</span>
+                            </label>
+                            <input type="number" id="p2-media-outras-final" min="0" max="10" step="0.01" placeholder="Digite a nota da média de outras atividades P2">
+                        </div>
+                        <div class="sub-component-group">
+                            <p class="sub-component-title">Ou calcule a Média de Outras Atividades P2:</p>
+                            <div class="form-group">
+                                <label for="p2-ed-2">
+                                    <span>Estudo Dirigido 2</span>
+                                    <span class="points-label">(10 pontos)</span>
+                                </label>
+                                <input type="number" id="p2-ed-2" min="0" max="10" step="0.01" placeholder="Nota do Estudo Dirigido 2">
+                            </div>
+                            <div class="form-group">
+                                <label for="p2-painel-2">
+                                    <span>Painel Interativo 2</span>
+                                    <span class="points-label">(10 pontos)</span>
+                                </label>
+                                <input type="number" id="p2-painel-2" min="0" max="10" step="0.01" placeholder="Nota do Painel Interativo 2">
+                            </div>
+                            <div class="form-group">
+                                <label for="p2-situacao-2">
+                                    <span>Situação Clínica Integrada 2</span>
+                                    <span class="points-label">(10 pontos)</span>
+                                </label>
+                                <input type="number" id="p2-situacao-2" min="0" max="10" step="0.01" placeholder="Nota da Situação Clínica Integrada 2">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="buttons">
+                    <button type="button" id="calcular" class="btn-calcular">Calcular</button>
+                    <button type="button" id="limpar" class="btn-limpar">Limpar</button>
+                </div>
+            </form>
+
+            <div id="resultado" class="resultado" style="display: none;">
+                <h3>Resultado:</h3>
+                <div id="media-final" style="display: none;" class="media-final-wrapper">
+                    <p>Sua média final é: <strong id="nota-final">0.00</strong></p>
+                    <p id="mensagem"></p>
+                </div>
+                <div id="notas-necessarias"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Autoria de Gabriel Papa</p>
+        </div>
+    </footer>
+
+   <script src="js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const calcularBtn = document.getElementById('calcular');
+            const limparBtn = document.getElementById('limpar');
+            if (calcularBtn) calcularBtn.addEventListener('click', calcularNota);
+            if (limparBtn) limparBtn.addEventListener('click', () => limparCampos(document.getElementById('calculadora-form')));
+        });
+
+        function getNota(id) {
+            const val = document.getElementById(id).value;
+            return val !== '' ? parseFloat(val) : null;
+        }
+
+        function calcularNota() {
+            // --- Obter todas as notas primeiro ---
+            let p1 = getNota('p1-completa');
+            let p2 = getNota('p2-completa');
+            let p1AvalEscrita = getNota('p1-aval-escrita');
+            let p1MediaOutras = getNota('p1-media-outras-final');
+            const p1Ed1 = getNota('p1-ed-1'), p1Painel1 = getNota('p1-painel-1'), p1Situacao1 = getNota('p1-situacao-1');
+            let p2AvalEscrita = getNota('p2-avaliacao-escrita');
+            let p2MediaOutras = getNota('p2-media-outras-final');
+            const p2Ed2 = getNota('p2-ed-2'), p2Painel2 = getNota('p2-painel-2'), p2Situacao2 = getNota('p2-situacao-2');
+
+            // --- Calcular médias de sub-componentes ---
+            if (p1MediaOutras === null && [p1Ed1, p1Painel1, p1Situacao1].every(n => n !== null)) {
+                p1MediaOutras = (p1Ed1 + p1Painel1 + p1Situacao1) / 3;
+            }
+            if (p2MediaOutras === null && [p2Ed2, p2Painel2, p2Situacao2].every(n => n !== null)) {
+                p2MediaOutras = (p2Ed2 + p2Painel2 + p2Situacao2) / 3;
+            }
+
+            // --- Calcular P1 e P2 finais se todos os seus componentes estiverem preenchidos ---
+            if (p1 === null && p1AvalEscrita !== null && p1MediaOutras !== null) {
+                p1 = ((p1AvalEscrita * 5) + (p1MediaOutras * 2)) / 7;
+            }
+            if (p2 === null && p2AvalEscrita !== null && p2MediaOutras !== null) {
+                p2 = ((p2AvalEscrita * 5) + (p2MediaOutras * 2)) / 7;
+            }
+
+            // --- Lógica de exibição ---
+            const resultadoDiv = document.getElementById('resultado');
+            const mediaFinalDiv = document.getElementById('media-final');
+            const notasNecessariasDiv = document.getElementById('notas-necessarias');
+            
+            mediaFinalDiv.style.display = 'none';
+            notasNecessariasDiv.innerHTML = '';
+
+            if (p1 !== null && p2 !== null) {
+                // ... (código para exibir a média final)
+            } else {
+                notasNecessariasDiv.style.display = 'block';
+                let html = '<h4>Notas necessárias para média 7:</h4><ul>';
+                
+                const TARGET_WEIGHTED_SUM = 98; // (P1=7 * peso 7) + (P2=7 * peso 7)
+                let currentWeightedSum = 0;
+
+                if (p1 !== null) currentWeightedSum += p1 * 7;
+                if (p2 !== null) currentWeightedSum += p2 * 7;
+
+                const mainComponents = [
+                    { name: "Avaliação Escrita 1", value: p1AvalEscrita, weight: 5, max: 10, isMissing: p1 === null && p1AvalEscrita === null },
+                    { name: "Média de Outras Atividades P1", value: p1MediaOutras, weight: 2, max: 10, isMissing: p1 === null && p1MediaOutras === null, subs: [{v:p1Ed1, m:10},{v:p1Painel1, m:10},{v:p1Situacao1, m:10}], subNames: ['Estudo Dirigido 1', 'Painel Interativo 1', 'Situação Clínica Integrada 1']},
+                    { name: "Avaliação Escrita 2", value: p2AvalEscrita, weight: 5, max: 10, isMissing: p2 === null && p2AvalEscrita === null },
+                    { name: "Média de Outras Atividades P2", value: p2MediaOutras, weight: 2, max: 10, isMissing: p2 === null && p2MediaOutras === null, subs: [{v:p2Ed2, m:10},{v:p2Painel2, m:10},{v:p2Situacao2, m:10}], subNames: ['Estudo Dirigido 2', 'Painel Interativo 2', 'Situação Clínica Integrada 2']}
+                ];
+                
+                mainComponents.forEach(c => {
+                    if (c.value !== null && !c.isMissing) {
+                         currentWeightedSum += c.value * c.weight;
+                    }
+                });
+
+                const neededWeightedSum = TARGET_WEIGHTED_SUM - currentWeightedSum;
+                const missingComponents = mainComponents.filter(c => c.isMissing);
+                const maxWeightedSumOfMissing = missingComponents.reduce((sum, c) => sum + (c.max * c.weight), 0);
+
+                if (neededWeightedSum > maxWeightedSumOfMissing + 0.01) {
+                    html += '<li>Com as notas atuais, não é possível atingir média 7.</li>';
+                } else {
+                    missingComponents.forEach(comp => {
+                        const proportion = maxWeightedSumOfMissing > 0 ? (comp.max * comp.weight) / maxWeightedSumOfMissing : 0;
+                        const neededScore = maxWeightedSumOfMissing > 0 ? (neededWeightedSum * proportion) / comp.weight : 0;
+                        html += `<li>${comp.name}: <strong>${formatarNota(Math.max(0, Math.min(comp.max, neededScore)))}</strong> (de ${comp.max})</li>`;
+
+                        if (comp.subs && comp.value === null) {
+                            let currentSubSum = 0;
+                            const missingSubs = comp.subs.filter(s => s.v === null);
+                            comp.subs.filter(s => s.v !== null).forEach(s => currentSubSum += s.v);
+                            
+                            if(missingSubs.length > 0) {
+                                const neededSubSum = (neededScore * comp.subs.length) - currentSubSum;
+                                const maxSubSum = missingSubs.reduce((sum, s) => sum + s.m, 0);
+                                missingSubs.forEach((sub, i) => {
+                                    const subNeeded = maxSubSum > 0 ? (neededSubSum * sub.m) / maxSubSum : 0;
+                                    html += `<li style="list-style-type: '→ '; padding-left: 10px;">${comp.subNames[comp.subs.indexOf(sub)]}: <strong>${formatarNota(Math.max(0,Math.min(sub.m, subNeeded)))}</strong> (de ${sub.m})</li>`;
+                                });
+                            }
+                        }
+                    });
+                }
+                html += '</ul>';
+                notasNecessariasDiv.innerHTML = html;
+            }
+            resultadoDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
