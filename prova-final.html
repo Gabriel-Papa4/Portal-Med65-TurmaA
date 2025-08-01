@@ -13,7 +13,7 @@
     <header>
         <div class="container">
             <h1>Calculadora de Notas</h1>
-            <h2>3° Período</h2>
+            <h2>4° Período</h2>
         </div>
     </header>
 
@@ -69,102 +69,77 @@
             const limparBtn = document.getElementById('limpar');
             
             calcularBtn.addEventListener('click', calcularProvaFinal);
-            limparBtn.addEventListener('click', () => limparCampos(document.getElementById('calculadora-form'))); // Usar a função geral de limpar
+            limparBtn.addEventListener('click', () => limparCampos(document.getElementById('calculadora-form')));
         });
         
         function calcularProvaFinal() {
-            // Obter valores dos campos
             const mediaSemestralStr = document.getElementById('media-semestral').value;
             const provaFinalStr = document.getElementById('prova-final').value;
             
-            // Elementos DOM para resultado
             const resultadoDiv = document.getElementById('resultado');
             const mediaFinalDiv = document.getElementById('media-final');
             const notaFinalEl = document.getElementById('nota-final');
             const mensagemEl = document.getElementById('mensagem');
-            const notasNecessariasDiv = document.getElementById('notas-necessarias'); // Usado para mensagens de necessidade
+            const notasNecessariasDiv = document.getElementById('notas-necessarias');
 
             // Resetar antes de cada cálculo
-            notasNecessariasDiv.innerHTML = '';
-            notasNecessariasDiv.style.display = 'none';
             mediaFinalDiv.style.display = 'none';
-            mediaFinalDiv.classList.remove('aprovado', 'recuperacao', 'reprovado');
-            mensagemEl.className = ''; 
-            notaFinalEl.textContent = '0.00';
+            notasNecessariasDiv.style.display = 'none';
+            notasNecessariasDiv.innerHTML = '';
+            mensagemEl.className = '';
             
-            // Verificar se pelo menos um campo foi preenchido
             if (!mediaSemestralStr && !provaFinalStr) {
                 alert('Por favor, preencha pelo menos um dos campos.');
-                resultadoDiv.style.display = 'none'; // Esconde o resultado se nada foi preenchido
+                resultadoDiv.style.display = 'none';
                 return;
             }
             
             let mediaSemestral = mediaSemestralStr !== '' ? parseFloat(mediaSemestralStr) : null;
             let provaFinal = provaFinalStr !== '' ? parseFloat(provaFinalStr) : null;
 
-            // Validar a média semestral se preenchida
             if (mediaSemestral !== null && (mediaSemestral < 3 || mediaSemestral >= 7)) {
                 alert('A média semestral deve estar entre 3.00 e 6.99 para cálculo de Prova Final.');
                 return;
             }
 
-            // Exibir a seção de resultado
             resultadoDiv.style.display = 'block';
 
-            // Caso 1: Ambos os campos preenchidos
+            // Caso 1: Ambos os campos preenchidos (Calcula a média final)
             if (mediaSemestral !== null && provaFinal !== null) {
                 const mediaFinalValor = (mediaSemestral + provaFinal) / 2;
                 
                 notaFinalEl.textContent = formatarNota(mediaFinalValor);
                 
-                if (mediaFinalValor >= 5) { // Passou na final
+                if (mediaFinalValor >= 5) {
                     mensagemEl.textContent = "Parabéns, você passou!";
-                    mediaFinalDiv.classList.add('aprovado');
                     mensagemEl.classList.add('aprovado-msg');
-                } else { // Reprovou na final
+                } else {
                     mensagemEl.textContent = "Reprovado, Med66 te recebe de braços abertos.";
-                    mediaFinalDiv.classList.add('reprovado');
                     mensagemEl.classList.add('reprovado-msg');
                 }
                 mediaFinalDiv.style.display = 'block';
             }
-            // Caso 2: Apenas média semestral preenchida (calcular quanto precisa na PF)
+            // Caso 2: Apenas média semestral preenchida (Calcula quanto precisa na PF)
             else if (mediaSemestral !== null) {
-                const notaNecessaria = (10 - mediaSemestral); // Média final 5, então (Media Semestral + PF) / 2 = 5 -> Media Semestral + PF = 10
-                
-                notaFinalEl.textContent = formatarNota(notaNecessaria);
-                // Ajusta a mensagem e classe para indicar recuperação
-                mensagemEl.textContent = `Você precisa tirar ${formatarNota(notaNecessaria)} na Prova Final para ser aprovado.`;
-                mediaFinalDiv.classList.add('recuperacao');
-                mensagemEl.classList.add('recuperacao-msg');
-                mediaFinalDiv.style.display = 'block';
+                const notaNecessaria = (10 - mediaSemestral);
+                notasNecessariasDiv.innerHTML = `<p class="recuperacao-msg">Você precisa tirar ${formatarNota(notaNecessaria)} na Prova Final para ser aprovado.</p>`;
+                notasNecessariasDiv.style.display = 'block';
             }
-            // Caso 3: Apenas prova final preenchida (calcular qual média semestral era necessária)
+            // Caso 3: Apenas prova final preenchida (Calcula qual média semestral era necessária)
             else if (provaFinal !== null) {
-                const mediaNecessaria = (10 - provaFinal); // Para tirar 5 na final
-                const mediaNecessariaLimitada = Math.min(Math.max(mediaNecessaria, 3), 6.99); // Limita entre 3 e 6.99
+                const mediaNecessaria = (10 - provaFinal);
+                const mediaNecessariaLimitada = Math.min(Math.max(mediaNecessaria, 3), 6.99);
                 
-                notaFinalEl.textContent = formatarNota(mediaNecessariaLimitada);
-                // Ajusta a mensagem e classe para indicar recuperação
-                mensagemEl.textContent = `Você precisaria ter média semestral de ${formatarNota(mediaNecessariaLimitada)} para ser aprovado.`;
-                mediaFinalDiv.classList.add('recuperacao');
-                mensagemEl.classList.add('recuperacao-msg');
-                mediaFinalDiv.style.display = 'block';
+                notasNecessariasDiv.innerHTML = `<p class="recuperacao-msg">Você precisaria ter tido uma média semestral de ${formatarNota(mediaNecessariaLimitada)} para ser aprovado.</p>`;
+                notasNecessariasDiv.style.display = 'block';
             }
         }
-        // Funções auxiliares (copiadas do js/script.js)
+        
         function formatarNota(nota) {
             if (typeof nota !== 'number' || isNaN(nota)) {
                 return "N/A";
             }
             return nota.toFixed(2);
-        }
-
-        function obterMensagem(nota) {
-            // Esta função obterMensagem não é usada na prova final como nos outros HTMLs
-            // A mensagem é gerada diretamente com base no resultado da PF.
-            if (nota >= 5) return "Parabéns, você passou!";
-            return "Reprovado, Med66 te recebe de braços abertos.";
         }
     </script>
 </body>
