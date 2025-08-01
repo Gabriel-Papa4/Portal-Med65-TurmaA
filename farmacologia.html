@@ -165,7 +165,6 @@
         }
 
         function calcularNota() {
-            // --- Obter todas as notas primeiro ---
             let p1 = getNota('p1-completa');
             let p2 = getNota('p2-completa');
             let p1AvalEscrita = getNota('p1-aval-escrita');
@@ -175,7 +174,6 @@
             let p2MediaOutras = getNota('p2-media-outras-final');
             const p2Ed2 = getNota('p2-ed-2'), p2Painel2 = getNota('p2-painel-2'), p2Situacao2 = getNota('p2-situacao-2');
 
-            // --- Calcular médias de sub-componentes ---
             if (p1MediaOutras === null && [p1Ed1, p1Painel1, p1Situacao1].every(n => n !== null)) {
                 p1MediaOutras = (p1Ed1 + p1Painel1 + p1Situacao1) / 3;
             }
@@ -183,7 +181,6 @@
                 p2MediaOutras = (p2Ed2 + p2Painel2 + p2Situacao2) / 3;
             }
 
-            // --- Calcular P1 e P2 finais se todos os seus componentes estiverem preenchidos ---
             if (p1 === null && p1AvalEscrita !== null && p1MediaOutras !== null) {
                 p1 = ((p1AvalEscrita * 5) + (p1MediaOutras * 2)) / 7;
             }
@@ -191,31 +188,58 @@
                 p2 = ((p2AvalEscrita * 5) + (p2MediaOutras * 2)) / 7;
             }
 
-            // --- Lógica de exibição ---
             const resultadoDiv = document.getElementById('resultado');
             const mediaFinalDiv = document.getElementById('media-final');
             const notasNecessariasDiv = document.getElementById('notas-necessarias');
+            const notaFinalEl = document.getElementById('nota-final');
+            const mensagemEl = document.getElementById('mensagem');
             
             mediaFinalDiv.style.display = 'none';
             notasNecessariasDiv.innerHTML = '';
+            mediaFinalDiv.classList.remove('aprovado', 'recuperacao', 'reprovado');
+            mensagemEl.classList.remove('aprovado-msg', 'recuperacao-msg', 'reprovado-msg');
+            const linkPfWrapper = mediaFinalDiv.querySelector('.link-pf-wrapper');
+            if (linkPfWrapper) linkPfWrapper.remove();
+
+            const PASSING_GRADE = 7;
 
             if (p1 !== null && p2 !== null) {
-                // ... (código para exibir a média final)
+                notasNecessariasDiv.style.display = 'none';
+                mediaFinalDiv.style.display = 'block';
+                
+                const mediaFinalValor = (p1 + p2) / 2;
+                notaFinalEl.textContent = formatarNota(mediaFinalValor);
+                mensagemEl.textContent = obterMensagem(mediaFinalValor);
+
+                if (mediaFinalValor >= PASSING_GRADE) {
+                    mediaFinalDiv.classList.add('aprovado');
+                    mensagemEl.classList.add('aprovado-msg');
+                } else if (mediaFinalValor >= 3) {
+                    mediaFinalDiv.classList.add('recuperacao');
+                    mensagemEl.classList.add('recuperacao-msg');
+                    const linkPf = document.createElement('p');
+                    linkPf.className = 'link-pf-wrapper';
+                    linkPf.innerHTML = `<a href="prova-final.html" class="btn-calcular" style="display: inline-block; margin-top: 10px; text-decoration: none; text-align: center;">Cálculo da Prova Final</a>`;
+                    mediaFinalDiv.appendChild(linkPf);
+                } else {
+                    mediaFinalDiv.classList.add('reprovado');
+                    mensagemEl.classList.add('reprovado-msg');
+                }
             } else {
                 notasNecessariasDiv.style.display = 'block';
                 let html = '<h4>Notas necessárias para média 7:</h4><ul>';
                 
-                const TARGET_WEIGHTED_SUM = 98; // (P1=7 * peso 7) + (P2=7 * peso 7)
+                const TARGET_WEIGHTED_SUM = 98;
                 let currentWeightedSum = 0;
 
                 if (p1 !== null) currentWeightedSum += p1 * 7;
                 if (p2 !== null) currentWeightedSum += p2 * 7;
 
                 const mainComponents = [
-                    { name: "Avaliação Escrita 1", value: p1AvalEscrita, weight: 5, max: 10, isMissing: p1 === null && p1AvalEscrita === null },
-                    { name: "Média de Outras Atividades P1", value: p1MediaOutras, weight: 2, max: 10, isMissing: p1 === null && p1MediaOutras === null, subs: [{v:p1Ed1, m:10},{v:p1Painel1, m:10},{v:p1Situacao1, m:10}], subNames: ['Estudo Dirigido 1', 'Painel Interativo 1', 'Situação Clínica Integrada 1']},
-                    { name: "Avaliação Escrita 2", value: p2AvalEscrita, weight: 5, max: 10, isMissing: p2 === null && p2AvalEscrita === null },
-                    { name: "Média de Outras Atividades P2", value: p2MediaOutras, weight: 2, max: 10, isMissing: p2 === null && p2MediaOutras === null, subs: [{v:p2Ed2, m:10},{v:p2Painel2, m:10},{v:p2Situacao2, m:10}], subNames: ['Estudo Dirigido 2', 'Painel Interativo 2', 'Situação Clínica Integrada 2']}
+                    { p: 'P1', name: "Avaliação Escrita 1", value: p1AvalEscrita, weight: 5, max: 10, isMissing: p1 === null && p1AvalEscrita === null },
+                    { p: 'P1', name: "Média de Outras Atividades P1", value: p1MediaOutras, weight: 2, max: 10, isMissing: p1 === null && p1MediaOutras === null, subs: [{v:p1Ed1, m:10},{v:p1Painel1, m:10},{v:p1Situacao1, m:10}], subNames: ['Estudo Dirigido 1', 'Painel Interativo 1', 'Situação Clínica Integrada 1']},
+                    { p: 'P2', name: "Avaliação Escrita 2", value: p2AvalEscrita, weight: 5, max: 10, isMissing: p2 === null && p2AvalEscrita === null },
+                    { p: 'P2', name: "Média de Outras Atividades P2", value: p2MediaOutras, weight: 2, max: 10, isMissing: p2 === null && p2MediaOutras === null, subs: [{v:p2Ed2, m:10},{v:p2Painel2, m:10},{v:p2Situacao2, m:10}], subNames: ['Estudo Dirigido 2', 'Painel Interativo 2', 'Situação Clínica Integrada 2']}
                 ];
                 
                 mainComponents.forEach(c => {
@@ -231,26 +255,55 @@
                 if (neededWeightedSum > maxWeightedSumOfMissing + 0.01) {
                     html += '<li>Com as notas atuais, não é possível atingir média 7.</li>';
                 } else {
-                    missingComponents.forEach(comp => {
-                        const proportion = maxWeightedSumOfMissing > 0 ? (comp.max * comp.weight) / maxWeightedSumOfMissing : 0;
-                        const neededScore = maxWeightedSumOfMissing > 0 ? (neededWeightedSum * proportion) / comp.weight : 0;
-                        html += `<li>${comp.name}: <strong>${formatarNota(Math.max(0, Math.min(comp.max, neededScore)))}</strong> (de ${comp.max})</li>`;
-
-                        if (comp.subs && comp.value === null) {
-                            let currentSubSum = 0;
-                            const missingSubs = comp.subs.filter(s => s.v === null);
-                            comp.subs.filter(s => s.v !== null).forEach(s => currentSubSum += s.v);
-                            
-                            if(missingSubs.length > 0) {
-                                const neededSubSum = (neededScore * comp.subs.length) - currentSubSum;
-                                const maxSubSum = missingSubs.reduce((sum, s) => sum + s.m, 0);
-                                missingSubs.forEach((sub, i) => {
-                                    const subNeeded = maxSubSum > 0 ? (neededSubSum * sub.m) / maxSubSum : 0;
-                                    html += `<li style="list-style-type: '→ '; padding-left: 10px;">${comp.subNames[comp.subs.indexOf(sub)]}: <strong>${formatarNota(Math.max(0,Math.min(sub.m, subNeeded)))}</strong> (de ${sub.m})</li>`;
-                                });
-                            }
-                        }
-                    });
+                    const missingP1 = missingComponents.filter(c => c.p === 'P1');
+                    const missingP2 = missingComponents.filter(c => c.p === 'P2');
+                    
+                    if (missingP1.length > 0) {
+                        const targetP1 = (p2 !== null) ? (14 - p2) : PASSING_GRADE;
+                        html += `<li style="list-style-type: none;"><strong>--- Para P1 atingir ~${formatarNota(targetP1)} ---</strong></li>`;
+                        missingP1.forEach(comp => {
+                           const proportion = maxWeightedSumOfMissing > 0 ? (comp.max * comp.weight) / maxWeightedSumOfMissing : 0;
+                           const neededScore = maxWeightedSumOfMissing > 0 ? (neededWeightedSum * proportion) / comp.weight : 0;
+                           html += `<li style="list-style-type: '→ '; padding-left: 10px;">${comp.name}: <strong>${formatarNota(Math.max(0, Math.min(comp.max, neededScore)))}</strong> (de ${comp.max})</li>`;
+                           if (comp.subs) { /* Sub-component logic added here */
+                                let currentSubSum = 0;
+                                const missingSubs = comp.subs.filter(s => s.v === null);
+                                comp.subs.filter(s => s.v !== null).forEach(s => currentSubSum += s.v);
+                                if(missingSubs.length > 0) {
+                                    const neededSubSum = (neededScore * comp.subs.length) - currentSubSum;
+                                    missingSubs.forEach((sub, i) => {
+                                        const subNeeded = neededSubSum / missingSubs.length;
+                                        const subIndex = comp.subs.indexOf(sub);
+                                        const subName = comp.subNames[subIndex];
+                                        html += `<li style="list-style-type: '↳'; padding-left: 25px;">${subName}: <strong>${formatarNota(Math.max(0,Math.min(sub.m, subNeeded)))}</strong> (de ${sub.m})</li>`;
+                                    });
+                                }
+                           }
+                        });
+                    }
+                    if (missingP2.length > 0) {
+                        const targetP2 = (p1 !== null) ? (14 - p1) : PASSING_GRADE;
+                        html += `<li style="list-style-type: none;"><strong>--- Para P2 atingir ~${formatarNota(targetP2)} ---</strong></li>`;
+                        missingP2.forEach(comp => {
+                            const proportion = maxWeightedSumOfMissing > 0 ? (comp.max * comp.weight) / maxWeightedSumOfMissing : 0;
+                            const neededScore = maxWeightedSumOfMissing > 0 ? (neededWeightedSum * proportion) / comp.weight : 0;
+                            html += `<li style="list-style-type: '→ '; padding-left: 10px;">${comp.name}: <strong>${formatarNota(Math.max(0, Math.min(comp.max, neededScore)))}</strong> (de ${comp.max})</li>`;
+                             if (comp.subs) { /* Sub-component logic added here */
+                                let currentSubSum = 0;
+                                const missingSubs = comp.subs.filter(s => s.v === null);
+                                comp.subs.filter(s => s.v !== null).forEach(s => currentSubSum += s.v);
+                                if(missingSubs.length > 0) {
+                                    const neededSubSum = (neededScore * comp.subs.length) - currentSubSum;
+                                    missingSubs.forEach((sub, i) => {
+                                        const subNeeded = neededSubSum / missingSubs.length;
+                                        const subIndex = comp.subs.indexOf(sub);
+                                        const subName = comp.subNames[subIndex];
+                                        html += `<li style="list-style-type: '↳'; padding-left: 25px;">${subName}: <strong>${formatarNota(Math.max(0,Math.min(sub.m, subNeeded)))}</strong> (de ${sub.m})</li>`;
+                                    });
+                                }
+                           }
+                        });
+                    }
                 }
                 html += '</ul>';
                 notasNecessariasDiv.innerHTML = html;
