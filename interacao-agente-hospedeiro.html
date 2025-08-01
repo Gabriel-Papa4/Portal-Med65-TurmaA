@@ -196,16 +196,45 @@
                 p2 = p2Vals.reduce((a, b) => a + b, 0);
             }
             
-            const notasNecessariasDiv = document.getElementById('notas-necessarias');
+            const resultadoDiv = document.getElementById('resultado');
             const mediaFinalDiv = document.getElementById('media-final');
+            const notasNecessariasDiv = document.getElementById('notas-necessarias');
+            const notaFinalEl = document.getElementById('nota-final');
+            const mensagemEl = document.getElementById('mensagem');
+
+            // --- RESET VISUAL COMPLETO ---
             mediaFinalDiv.style.display = 'none';
             notasNecessariasDiv.innerHTML = '';
-            const resultadoDiv = document.getElementById('resultado');
-
+            mediaFinalDiv.classList.remove('aprovado', 'recuperacao', 'reprovado');
+            mensagemEl.classList.remove('aprovado-msg', 'recuperacao-msg', 'reprovado-msg');
+            const linkPfWrapper = mediaFinalDiv.querySelector('.link-pf-wrapper');
+            if (linkPfWrapper) linkPfWrapper.remove();
+            // --- FIM DO RESET ---
+            
             const PASSING_GRADE = 7;
 
             if (p1 !== null && p2 !== null) {
-                // ... (código de exibição de resultado final)
+                notasNecessariasDiv.style.display = 'none';
+                mediaFinalDiv.style.display = 'block';
+
+                const mediaFinalValor = (p1 + p2) / 2;
+                notaFinalEl.textContent = formatarNota(mediaFinalValor);
+                mensagemEl.textContent = obterMensagem(mediaFinalValor);
+
+                if (mediaFinalValor >= PASSING_GRADE) {
+                    mediaFinalDiv.classList.add('aprovado');
+                    mensagemEl.classList.add('aprovado-msg');
+                } else if (mediaFinalValor >= 3) {
+                    mediaFinalDiv.classList.add('recuperacao');
+                    mensagemEl.classList.add('recuperacao-msg');
+                    const linkPf = document.createElement('p');
+                    linkPf.className = 'link-pf-wrapper';
+                    linkPf.innerHTML = `<a href="prova-final.html" class="btn-calcular" style="display: inline-block; margin-top: 10px; text-decoration: none; text-align: center;">Cálculo da Prova Final</a>`;
+                    mediaFinalDiv.appendChild(linkPf);
+                } else {
+                    mediaFinalDiv.classList.add('reprovado');
+                    mensagemEl.classList.add('reprovado-msg');
+                }
             } else {
                 notasNecessariasDiv.style.display = 'block';
                 const allComponents = [
@@ -242,7 +271,7 @@
                     const missingP2 = missingComponents.filter(c => c.p === 'P2');
                     
                     if (missingP1.length > 0) {
-                         const targetP1 = p2 !== null ? 14 - p2 : PASSING_GRADE;
+                         const targetP1 = (p2 !== null) ? (14 - p2) : (p1 === null && p2 === null ? PASSING_GRADE : neededSum);
                          html += `<li style="list-style-type: none;"><strong>--- Para P1 atingir ~${formatarNota(targetP1)} ---</strong></li>`;
                          missingP1.forEach(comp => {
                             const needed = missingSumMax > 0 ? (neededSum * comp.max) / missingSumMax : 0;
@@ -251,7 +280,7 @@
                         });
                     }
                      if (missingP2.length > 0) {
-                         const targetP2 = p1 !== null ? 14 - p1 : PASSING_GRADE;
+                         const targetP2 = (p1 !== null) ? (14 - p1) : (p1 === null && p2 === null ? PASSING_GRADE : neededSum);
                          html += `<li style="list-style-type: none;"><strong>--- Para P2 atingir ~${formatarNota(targetP2)} ---</strong></li>`;
                          missingP2.forEach(comp => {
                             const needed = missingSumMax > 0 ? (neededSum * comp.max) / missingSumMax : 0;
