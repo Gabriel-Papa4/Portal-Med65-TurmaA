@@ -206,10 +206,9 @@
             mediaFinalDiv.style.display = 'none';
             notasNecessariasDiv.innerHTML = '';
             mediaFinalDiv.classList.remove('aprovado', 'recuperacao', 'reprovado');
-            mensagemEl.classList.remove('aprovado-msg', 'recuperacao-msg', 'reprovado-msg');
+            mensagemEl.className = '';
             const linkPfWrapper = mediaFinalDiv.querySelector('.link-pf-wrapper');
             if (linkPfWrapper) linkPfWrapper.remove();
-            // --- FIM DO RESET ---
             
             const PASSING_GRADE = 7;
 
@@ -236,62 +235,78 @@
                     mensagemEl.classList.add('reprovado-msg');
                 }
             } else {
+                mediaFinalDiv.style.display = 'none';
                 notasNecessariasDiv.style.display = 'block';
-                const allComponents = [
-                    ...p1CompsIds.map((id, i) => ({ id, max: parseFloat(document.getElementById(id).max) || 0, p: 'P1', value: p1Vals[i] })),
-                    ...p2CompsIds.map((id, i) => ({ id, max: parseFloat(document.getElementById(id).max) || 0, p: 'P2', value: p2Vals[i] }))
-                ];
 
-                let currentSum = 0;
-                if (p1 !== null) currentSum += p1;
-                if (p2 !== null) currentSum += p2;
+                let min_p1 = (p1 !== null) ? p1 : p1Vals.filter(n => n !== null).reduce((a, b) => a + b, 0);
+                let min_p2 = (p2 !== null) ? p2 : p2Vals.filter(n => n !== null).reduce((a, b) => a + b, 0);
 
-                const missingComponents = [];
-                allComponents.forEach(comp => {
-                    if (comp.value !== null) {
-                        if ((comp.p === 'P1' && p1 === null) || (comp.p === 'P2' && p2 === null)) {
-                           currentSum += comp.value;
-                        }
-                    } else {
-                        if ((comp.p === 'P1' && p1 === null) || (comp.p === 'P2' && p2 === null)) {
-                            missingComponents.push(comp);
-                        }
-                    }
-                });
-                
-                const neededSum = 14 - currentSum;
-                const missingSumMax = missingComponents.reduce((sum, comp) => sum + comp.max, 0);
-                
-                let html = '<h4>Notas necessárias para média 7:</h4><ul>';
-                
-                if (neededSum > missingSumMax + 0.01) {
-                    html += '<li>Com as notas atuais, não é possível atingir média 7.</li>';
+                if ((min_p1 + min_p2) / 2 >= PASSING_GRADE) {
+                    notasNecessariasDiv.innerHTML = '<h4>Resultado:</h4><p class="aprovado-msg" style="font-weight: bold;">Parabéns, você já passou!</p>';
                 } else {
-                    const missingP1 = missingComponents.filter(c => c.p === 'P1');
-                    const missingP2 = missingComponents.filter(c => c.p === 'P2');
+                    let htmlOutput = '';
+                    if (p1 !== null) {
+                        htmlOutput += `<p style="font-weight: bold;">P1 (geral): ${formatarNota(p1)}</p>`;
+                    }
+                     if (p2 !== null) {
+                        htmlOutput += `<p style="font-weight: bold;">P2 (geral): ${formatarNota(p2)}</p>`;
+                    }
+                    htmlOutput += '<h4>Notas necessárias para média 7:</h4><ul>';
+
+                    const allComponents = [
+                        ...p1CompsIds.map((id, i) => ({ id, max: parseFloat(document.getElementById(id).max) || 0, p: 'P1', value: p1Vals[i] })),
+                        ...p2CompsIds.map((id, i) => ({ id, max: parseFloat(document.getElementById(id).max) || 0, p: 'P2', value: p2Vals[i] }))
+                    ];
+
+                    let currentSum = 0;
+                    if (p1 !== null) currentSum += p1;
+                    if (p2 !== null) currentSum += p2;
+
+                    const missingComponents = [];
+                    allComponents.forEach(comp => {
+                        if (comp.value !== null) {
+                            if ((comp.p === 'P1' && p1 === null) || (comp.p === 'P2' && p2 === null)) {
+                               currentSum += comp.value;
+                            }
+                        } else {
+                            if ((comp.p === 'P1' && p1 === null) || (comp.p === 'P2' && p2 === null)) {
+                                missingComponents.push(comp);
+                            }
+                        }
+                    });
                     
-                    if (missingP1.length > 0) {
-                         const targetP1 = (p2 !== null) ? (14 - p2) : (p1 === null && p2 === null ? PASSING_GRADE : neededSum);
-                         html += `<li style="list-style-type: none;"><strong>--- Para P1 atingir ~${formatarNota(targetP1)} ---</strong></li>`;
-                         missingP1.forEach(comp => {
-                            const needed = missingSumMax > 0 ? (neededSum * comp.max) / missingSumMax : 0;
-                            const label = document.querySelector(`label[for=${comp.id}] span:first-child`).textContent;
-                            html += `<li style="list-style-type: '→ '; padding-left: 10px;">${label}: <strong>${formatarNota(Math.max(0, needed))}</strong> (de ${comp.max})</li>`;
-                        });
+                    const neededSum = 14 - currentSum;
+                    const missingSumMax = missingComponents.reduce((sum, comp) => sum + comp.max, 0);
+                    
+                    if (neededSum > missingSumMax + 0.01) {
+                        htmlOutput += '<li>Com as notas atuais, não é possível atingir média 7.</li>';
+                    } else {
+                        const missingP1 = missingComponents.filter(c => c.p === 'P1');
+                        const missingP2 = missingComponents.filter(c => c.p === 'P2');
+                        
+                        if (missingP1.length > 0) {
+                             const targetP1 = (p2 !== null) ? (14 - p2) : PASSING_GRADE;
+                             htmlOutput += `<li style="list-style-type: none;"><strong>--- Para P1 atingir ~${formatarNota(targetP1)} ---</strong></li>`;
+                             missingP1.forEach(comp => {
+                                const needed = missingSumMax > 0 ? (neededSum * comp.max) / missingSumMax : 0;
+                                const label = document.querySelector(`label[for=${comp.id}] span:first-child`).textContent;
+                                htmlOutput += `<li style="list-style-type: '→ '; padding-left: 10px;">${label}: <strong>${formatarNota(Math.max(0, Math.min(comp.max, needed)))}</strong> (de ${comp.max})</li>`;
+                            });
+                        }
+                         if (missingP2.length > 0) {
+                             const targetP2 = (p1 !== null) ? (14 - p1) : PASSING_GRADE;
+                             htmlOutput += `<li style="list-style-type: none;"><strong>--- Para P2 atingir ~${formatarNota(targetP2)} ---</strong></li>`;
+                             missingP2.forEach(comp => {
+                                const needed = missingSumMax > 0 ? (neededSum * comp.max) / missingSumMax : 0;
+                                const label = document.querySelector(`label[for=${comp.id}] span:first-child`).textContent;
+                                htmlOutput += `<li style="list-style-type: '→ '; padding-left: 10px;">${label}: <strong>${formatarNota(Math.max(0, Math.min(comp.max, needed)))}</strong> (de ${comp.max})</li>`;
+                            });
+                        }
                     }
-                     if (missingP2.length > 0) {
-                         const targetP2 = (p1 !== null) ? (14 - p1) : (p1 === null && p2 === null ? PASSING_GRADE : neededSum);
-                         html += `<li style="list-style-type: none;"><strong>--- Para P2 atingir ~${formatarNota(targetP2)} ---</strong></li>`;
-                         missingP2.forEach(comp => {
-                            const needed = missingSumMax > 0 ? (neededSum * comp.max) / missingSumMax : 0;
-                            const label = document.querySelector(`label[for=${comp.id}] span:first-child`).textContent;
-                            html += `<li style="list-style-type: '→ '; padding-left: 10px;">${label}: <strong>${formatarNota(Math.max(0, needed))}</strong> (de ${comp.max})</li>`;
-                        });
-                    }
+                    
+                    htmlOutput += '</ul>';
+                    notasNecessariasDiv.innerHTML = htmlOutput;
                 }
-                
-                html += '</ul>';
-                notasNecessariasDiv.innerHTML = html;
             }
             resultadoDiv.style.display = 'block';
         }
