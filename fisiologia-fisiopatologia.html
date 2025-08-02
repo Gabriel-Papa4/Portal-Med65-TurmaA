@@ -124,51 +124,44 @@
             if (calcularBtn) calcularBtn.addEventListener('click', calcularNota);
             if (limparBtn) limparBtn.addEventListener('click', () => limparCampos(document.getElementById('calculadora-form')));
         });
+        
+        function getNota(id) {
+            const val = document.getElementById(id).value;
+            return val !== '' ? parseFloat(val) : null;
+        }
 
         function calcularNota() {
-            // P1 Inputs
-            const p1CompletaStr = document.getElementById('p1-completa').value;
-            const p1FisioTeoStr = document.getElementById('p1-fisio-teorica').value;
-            const p1AnatoTeoStr = document.getElementById('p1-anato-teorica').value;
-            const p1AnatoPratStr = document.getElementById('p1-anato-pratica').value;
-
-            // P2 Inputs
-            const p2CompletaStr = document.getElementById('p2-completa').value;
-            const p2AvalIntegradaStr = document.getElementById('p2-avaliacao-integrada').value;
-            const p2FisioTeoricaStr = document.getElementById('p2-fisio-teorica').value;
-            const p2PratAnatoStr = document.getElementById('p2-pratica-anatomia').value;
-
-            let p1 = null;
-            if (p1CompletaStr !== '') {
-                p1 = parseFloat(p1CompletaStr);
-            } else if (p1FisioTeoStr && p1AnatoTeoStr && p1AnatoPratStr) {
-                p1 = parseFloat(p1FisioTeoStr) + parseFloat(p1AnatoTeoStr) + parseFloat(p1AnatoPratStr);
+            let p1 = getNota('p1-completa');
+            const p1FisioTeo = getNota('p1-fisio-teorica'), p1AnatoTeo = getNota('p1-anato-teorica'), p1AnatoPrat = getNota('p1-anato-pratica');
+            if (p1 === null && [p1FisioTeo, p1AnatoTeo, p1AnatoPrat].every(n => n !== null)) {
+                p1 = p1FisioTeo + p1AnatoTeo + p1AnatoPrat;
             }
 
-            let p2 = null;
-            if (p2CompletaStr !== '') {
-                p2 = parseFloat(p2CompletaStr);
-            } else if (p2AvalIntegradaStr && p2FisioTeoricaStr && p2PratAnatoStr) {
-                p2 = parseFloat(p2AvalIntegradaStr) + parseFloat(p2FisioTeoricaStr) + parseFloat(p2PratAnatoStr);
+            let p2 = getNota('p2-completa');
+            const p2AvalIntegrada = getNota('p2-avaliacao-integrada'), p2FisioTeorica = getNota('p2-fisio-teorica'), p2PratAnato = getNota('p2-pratica-anatomia');
+            if (p2 === null && [p2AvalIntegrada, p2FisioTeorica, p2PratAnato].every(n => n !== null)) {
+                p2 = p2AvalIntegrada + p2FisioTeorica + p2PratAnato;
             }
 
-            const notasNecessariasDiv = document.getElementById('notas-necessarias');
+            const resultadoDiv = document.getElementById('resultado');
             const mediaFinalDiv = document.getElementById('media-final');
+            const notasNecessariasDiv = document.getElementById('notas-necessarias');
             const notaFinalEl = document.getElementById('nota-final');
             const mensagemEl = document.getElementById('mensagem');
-            const resultadoDiv = document.getElementById('resultado');
 
-            notasNecessariasDiv.innerHTML = '';
             mediaFinalDiv.style.display = 'none';
+            notasNecessariasDiv.innerHTML = '';
             mediaFinalDiv.classList.remove('aprovado', 'recuperacao', 'reprovado');
             mensagemEl.className = '';
-            notaFinalEl.textContent = '0.00';
             const linkPfWrapper = mediaFinalDiv.querySelector('.link-pf-wrapper');
             if (linkPfWrapper) linkPfWrapper.remove();
-
+            
             const PASSING_GRADE = 7;
 
-            if (p1 !== null && !isNaN(p1) && p2 !== null && !isNaN(p2)) {
+            if (p1 !== null && p2 !== null) {
+                notasNecessariasDiv.style.display = 'none';
+                mediaFinalDiv.style.display = 'block';
+
                 const mediaFinalValor = (p1 + p2) / 2;
                 notaFinalEl.textContent = formatarNota(mediaFinalValor);
                 mensagemEl.textContent = obterMensagem(mediaFinalValor);
@@ -179,109 +172,77 @@
                 } else if (mediaFinalValor >= 3) {
                     mediaFinalDiv.classList.add('recuperacao');
                     mensagemEl.classList.add('recuperacao-msg');
-                    let linkPfWrapperLocal = mediaFinalDiv.querySelector('.link-pf-wrapper');
-                    if (!linkPfWrapperLocal) {
-                        linkPfWrapperLocal = document.createElement('p');
-                        linkPfWrapperLocal.className = 'link-pf-wrapper';
-                        linkPfWrapperLocal.innerHTML = `<a href="prova-final.html" class="btn-calcular btn-calcular-pf" style="display: inline-block; margin-top: 10px; text-decoration: none; text-align: center;">Cálculo da Prova Final</a>`;
-                        mediaFinalDiv.appendChild(linkPfWrapperLocal);
-                    }
+                    const linkPf = document.createElement('p');
+                    linkPf.className = 'link-pf-wrapper';
+                    linkPf.innerHTML = `<a href="prova-final.html" class="btn-calcular" style="display: inline-block; margin-top: 10px; text-decoration: none; text-align: center;">Cálculo da Prova Final</a>`;
+                    mediaFinalDiv.appendChild(linkPf);
                 } else {
                     mediaFinalDiv.classList.add('reprovado');
                     mensagemEl.classList.add('reprovado-msg');
                 }
-                mediaFinalDiv.style.display = 'block';
-                notasNecessariasDiv.style.display = 'none';
             } else {
                 mediaFinalDiv.style.display = 'none';
                 notasNecessariasDiv.style.display = 'block';
-                let htmlNotasNecessarias = '<h4>Notas necessárias para média 7:</h4><ul>';
 
-                const notasAlvoParaPx = {};
-                const TOTAL_PX = 2;
-                
-                let pontosAtuais = 0;
-                let numPxPreenchidas = 0;
+                let min_p1 = (p1 !== null) ? p1 : ([p1FisioTeo, p1AnatoTeo, p1AnatoPrat].filter(n=>n!==null).reduce((a,b)=>a+b,0));
+                let min_p2 = (p2 !== null) ? p2 : ([p2AvalIntegrada, p2FisioTeorica, p2PratAnato].filter(n=>n!==null).reduce((a,b)=>a+b,0));
 
-                if (p1 !== null && !isNaN(p1)) {
-                    pontosAtuais += p1;
-                    numPxPreenchidas++;
+                if ((min_p1 + min_p2) / 2 >= PASSING_GRADE) {
+                    notasNecessariasDiv.innerHTML = '<h4>Resultado:</h4><p class="aprovado-msg" style="font-weight: bold;">Parabéns, você já passou!</p>';
+                } else {
+                    let htmlOutput = '';
+                    if (p1 !== null) {
+                        htmlOutput += `<p style="font-weight: bold;">P1 (geral): ${formatarNota(p1)}</p>`;
+                    }
+                    if (p2 !== null) {
+                        htmlOutput += `<p style="font-weight: bold;">P2 (geral): ${formatarNota(p2)}</p>`;
+                    }
+                    htmlOutput += '<h4>Notas necessárias para média 7:</h4><ul>';
+
+                    const p1Comps = [{n:'AV. Teórica de Fisiologia',m:6,v:p1FisioTeo},{n:'AV. Teórica de Anatomia',m:2,v:p1AnatoTeo},{n:'Prova Prática Anatomia',m:2,v:p1AnatoPrat}];
+                    const p2Comps = [{n:'Av. Escrita Integrada',m:5,v:p2AvalIntegrada},{n:'AV. Teórica de Fisiologia',m:3,v:p2FisioTeorica},{n:'Prova Prática Anatomia',m:2,v:p2PratAnato}];
+
+                    if (p1 === null && p2 === null) {
+                        htmlOutput += `<li style="list-style-type: none;"><strong>--- Para P1 atingir ~7.00 ---</strong></li>`;
+                        htmlOutput += calculateMissingForPx(7, p1Comps);
+                        htmlOutput += `<li style="list-style-type: none;"><strong>--- Para P2 atingir ~7.00 ---</strong></li>`;
+                        htmlOutput += calculateMissingForPx(7, p2Comps);
+                    } else if (p1 !== null) {
+                        const neededP2 = 14 - p1;
+                        htmlOutput += `<li style="list-style-type: none;"><strong>--- Para P2 atingir ~${formatarNota(neededP2)} ---</strong></li>`;
+                        htmlOutput += calculateMissingForPx(neededP2, p2Comps);
+                    } else { // p2 !== null
+                        const neededP1 = 14 - p2;
+                        htmlOutput += `<li style="list-style-type: none;"><strong>--- Para P1 atingir ~${formatarNota(neededP1)} ---</strong></li>`;
+                        htmlOutput += calculateMissingForPx(neededP1, p1Comps);
+                    }
+                    htmlOutput += '</ul>';
+                    notasNecessariasDiv.innerHTML = htmlOutput;
                 }
-                if (p2 !== null && !isNaN(p2)) {
-                    pontosAtuais += p2;
-                    numPxPreenchidas++;
-                }
-
-                let pontosFaltantesParaMedia7 = (PASSING_GRADE * TOTAL_PX) - pontosAtuais;
-                let notaNecessariaGeral = pontosFaltantesParaMedia7 / (TOTAL_PX - numPxPreenchidas);
-                
-                let isPossibleToReach7 = notaNecessariaGeral <= 10.005;
-                notaNecessariaGeral = Math.max(0, Math.min(10, notaNecessariaGeral));
-
-                if (p1 === null || isNaN(p1)) notasAlvoParaPx['P1'] = notaNecessariaGeral;
-                if (p2 === null || isNaN(p2)) notasAlvoParaPx['P2'] = notaNecessariaGeral;
-
-                if (!isPossibleToReach7) {
-                    htmlNotasNecessarias += `<li>Com as notas atuais, não é possível atingir média 7.</li>`;
-                } else if (pontosFaltantesParaMedia7 <= 0) {
-                    htmlNotasNecessarias += `<li>Você já atingiu a média 7. Preencha os campos restantes com 0 se desejar.</li>`;
-                    if (p1 === null || isNaN(p1)) notasAlvoParaPx['P1'] = 0;
-                    if (p2 === null || isNaN(p2)) notasAlvoParaPx['P2'] = 0;
-                }
-
-                if (p1 === null || isNaN(p1)) {
-                    htmlNotasNecessarias += `<li>P1 (geral): <strong>${formatarNota(notasAlvoParaPx['P1'])}</strong></li>`;
-                    const p1Comps = [
-                        {nome: "Aval. Teórica Fisiologia", max: 6, currentStr: p1FisioTeoStr},
-                        {nome: "Aval. Teórica Anatomia", max: 2, currentStr: p1AnatoTeoStr},
-                        {nome: "Prova Prática Anatomia", max: 2, currentStr: p1AnatoPratStr}
-                    ];
-                    htmlNotasNecessarias += calcularNotasComponentes(p1Comps, notasAlvoParaPx['P1'], 'P1');
-                }
-                if (p2 === null || isNaN(p2)) {
-                    htmlNotasNecessarias += `<li>P2 (geral): <strong>${formatarNota(notasAlvoParaPx['P2'])}</strong></li>`;
-                    const p2Comps = [
-                        {nome: "Aval. Escrita Integrada", max: 5, currentStr: p2AvalIntegradaStr},
-                        {nome: "Aval. Teórica de Fisiologia", max: 3, currentStr: p2FisioTeoricaStr},
-                        {nome: "Prova Prática Anatomia", max: 2, currentStr: p2PratAnatoStr}
-                    ];
-                    htmlNotasNecessarias += calcularNotasComponentes(p2Comps, notasAlvoParaPx['P2'], 'P2');
-                }
-
-                htmlNotasNecessarias += '</ul>';
-                notasNecessariasDiv.innerHTML = htmlNotasNecessarias;
             }
             resultadoDiv.style.display = 'block';
         }
 
-        function calcularNotasComponentes(componentes, targetNotaDaPx, pxNome) {
+        function calculateMissingForPx(target, components) {
             let html = '';
-            const compsFaltando = componentes.filter(c => c.currentStr === '' || c.currentStr === null);
-            if (compsFaltando.length === 0) return '';
-            
-            html += `<li><strong>--- Para ${pxNome} atingir ${formatarNota(targetNotaDaPx)} ---</strong></li>`;
+            let currentSum = 0;
+            const missing = components.filter(c => c.v === null);
+            components.filter(c => c.v !== null).forEach(c => currentSum += c.v);
 
-            let somaAtualDosComponentesPreenchidos = 0;
-            componentes.forEach(c => {
-                if (c.currentStr !== '' && c.currentStr !== null) somaAtualDosComponentesPreenchidos += parseFloat(c.currentStr);
-            });
+            if (missing.length === 0) return '';
 
-            let pontosAindaNecessarios = targetNotaDaPx - somaAtualDosComponentesPreenchidos;
-            let somaMaxDosComponentesFaltantes = compsFaltando.reduce((sum, comp) => sum + comp.max, 0);
+            const neededSum = target - currentSum;
+            const maxMissingSum = missing.reduce((sum, c) => sum + c.m, 0);
 
-            if (pontosAindaNecessarios > somaMaxDosComponentesFaltantes + 0.005) {
-                compsFaltando.forEach(comp => {
-                    html += `<li>${comp.nome}: <strong>${formatarNota(comp.max)}</strong> (de ${comp.max}) (Insuficiente)</li>`;
-                });
+            if (neededSum > maxMissingSum + 0.01) {
+                missing.forEach(comp => { html += `<li style="list-style-type: '→ '; padding-left: 10px;">${comp.n}: <strong>> ${comp.m}</strong> (Impossível)</li>`; });
                 return html;
             }
 
-            compsFaltando.forEach(comp => {
-                let needed = 0;
-                if (somaMaxDosComponentesFaltantes > 0) {
-                    needed = (comp.max / somaMaxDosComponentesFaltantes) * pontosAindaNecessarios;
-                }
-                html += `<li>${comp.nome}: <strong>${formatarNota(Math.max(0, Math.min(comp.max, needed)))}</strong> (de ${comp.max})</li>`;
+            missing.forEach(comp => {
+                const proportion = maxMissingSum > 0 ? comp.m / maxMissingSum : 0;
+                const neededScore = neededSum * proportion;
+                html += `<li style="list-style-type: '→ '; padding-left: 10px;">${comp.n}: <strong>${formatarNota(Math.max(0, Math.min(comp.m, neededScore)))}</strong> (de ${comp.m})</li>`;
             });
             return html;
         }
