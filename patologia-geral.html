@@ -46,22 +46,22 @@
                         <div class="p1-components-details" id="p1ComponentsDetailsPatologia" style="display: none;">
                             <div class="form-group">
                                 <label for="p1-q1">
-                                    <span>QUESTIONÁRIO 1</span>
-                                    <span class="points-label">(10 pontos) - peso 1</span>
+                                    <span>Questionário 1</span>
+                                    <span class="points-label">(10 pts) - peso 1</span>
                                 </label>
                                 <input type="number" id="p1-q1" min="0" max="10" step="0.01" placeholder="Nota Questionário 1">
                             </div>
                             <div class="form-group">
                                 <label for="p1-q2">
-                                    <span>QUESTIONÁRIO 2</span>
-                                    <span class="points-label">(10 pontos) - peso 1</span>
+                                    <span>Questionário 2</span>
+                                    <span class="points-label">(10 pts) - peso 1</span>
                                 </label>
                                 <input type="number" id="p1-q2" min="0" max="10" step="0.01" placeholder="Nota Questionário 2">
                             </div>
                             <div class="form-group">
                                 <label for="p1-escrita-com">
-                                    <span>AVALIAÇÃO ESCRITA 1</span>
-                                    <span class="points-label">(10 pontos) - peso 5</span>
+                                    <span>Avaliação Escrita 1</span>
+                                    <span class="points-label">(10 pts) - peso 5</span>
                                 </label>
                                 <input type="number" id="p1-escrita-com" min="0" max="10" step="0.01" placeholder="Nota Avaliação Escrita 1">
                             </div>
@@ -79,21 +79,21 @@
                         <div class="p2-components-details" id="p2ComponentsDetailsPatologia" style="display: none;">
                             <div class="form-group">
                                 <label for="p2-q3">
-                                    <span>QUESTIONÁRIO 3</span>
+                                    <span>Questionário 3</span>
                                     <span class="points-label">(10 pts) - peso 1</span>
                                 </label>
                                 <input type="number" id="p2-q3" min="0" max="10" step="0.01" placeholder="Nota Questionário 3">
                             </div>
                             <div class="form-group">
                                 <label for="p2-q4">
-                                    <span>QUESTIONÁRIO 4</span>
+                                    <span>Questionário 4</span>
                                     <span class="points-label">(10 pts) - peso 1</span>
                                 </label>
                                 <input type="number" id="p2-q4" min="0" max="10" step="0.01" placeholder="Nota Questionário 4">
                             </div>
                             <div class="form-group">
                                 <label for="p2-escrita-com">
-                                    <span>AVALIAÇÃO ESCRITA 2</span>
+                                    <span>Avaliação Escrita 2</span>
                                     <span class="points-label">(10 pts) - peso 5</span>
                                 </label>
                                 <input type="number" id="p2-escrita-com" min="0" max="10" step="0.01" placeholder="Nota Avaliação Escrita 2">
@@ -284,25 +284,32 @@
                 if ((min_p1 + min_p2) / 2 >= PASSING_GRADE) {
                     notasNecessariasDiv.innerHTML = '<h4>Resultado:</h4><p class="aprovado-msg" style="font-weight: bold;">Parabéns, você já passou!</p>';
                 } else {
-                    let htmlNotasNecessarias = '<h4>Notas necessárias para média 7:</h4><ul>';
-
+                    let htmlOutput = '';
+                    if (p1 !== null) {
+                        htmlOutput += `<p style="font-weight: bold;">P1 (geral): ${formatarNota(p1)}</p>`;
+                    }
+                    if (p2 !== null) {
+                        htmlOutput += `<p style="font-weight: bold;">P2 (geral): ${formatarNota(p2)}</p>`;
+                    }
+                    htmlOutput += '<h4>Notas necessárias para média 7:</h4><ul>';
+                    
                     if (p1 === null && p2 === null) {
-                        htmlNotasNecessarias += `<li>P1 (geral): <strong>7.00</strong></li>`;
-                        if (tipoCalculo === 'com') { htmlNotasNecessarias += calculateMissingForPx(7, [{n:'Questionário 1',w:1,m:10,v:p1q1},{n:'Questionário 2',w:1,m:10,v:p1q2},{n:'Avaliação Escrita 1',w:5,m:10,v:p1escritaCom}]); }
-                        htmlNotasNecessarias += `<li>P2 (geral): <strong>7.00</strong></li>`;
-                        if (tipoCalculo === 'com') { htmlNotasNecessarias += calculateMissingForPx(7, [{n:'Questionário 3',w:1,m:10,v:p2q3},{n:'Questionário 4',w:1,m:10,v:p2q4},{n:'Avaliação Escrita 2',w:5,m:10,v:p2escritaCom}]); }
+                        htmlOutput += `<li>P1 (geral): <strong>7.00</strong></li>`;
+                        if (tipoCalculo === 'com') { htmlOutput += calculateMissingForPx(7, [{n:'Questionário 1',w:1,m:10,v:p1q1},{n:'Questionário 2',w:1,m:10,v:p1q2},{n:'Avaliação Escrita 1',w:5,m:10,v:p1escritaCom}]); }
+                        htmlOutput += `<li>P2 (geral): <strong>7.00</strong></li>`;
+                        if (tipoCalculo === 'com') { htmlOutput += calculateMissingForPx(7, [{n:'Questionário 3',w:1,m:10,v:p2q3},{n:'Questionário 4',w:1,m:10,v:p2q4},{n:'Avaliação Escrita 2',w:5,m:10,v:p2escritaCom}]); }
                     } else if (p1 !== null) {
                         const neededP2 = 14 - p1;
-                        htmlNotasNecessarias += `<li>P2 (geral): <strong>${formatarNota(neededP2)}</strong></li>`;
-                        if (tipoCalculo === 'com') { htmlNotasNecessarias += calculateMissingForPx(neededP2, [{n:'Questionário 3',w:1,m:10,v:p2q3},{n:'Questionário 4',w:1,m:10,v:p2q4},{n:'Avaliação Escrita 2',w:5,m:10,v:p2escritaCom}]); }
+                        htmlOutput += `<li>P2 (geral): <strong>${formatarNota(neededP2)}</strong></li>`;
+                        if (tipoCalculo === 'com') { htmlOutput += calculateMissingForPx(neededP2, [{n:'Questionário 3',w:1,m:10,v:p2q3},{n:'Questionário 4',w:1,m:10,v:p2q4},{n:'Avaliação Escrita 2',w:5,m:10,v:p2escritaCom}]); }
                     } else { // p2 !== null
                         const neededP1 = 14 - p2;
-                        htmlNotasNecessarias += `<li>P1 (geral): <strong>${formatarNota(neededP1)}</strong></li>`;
-                        if (tipoCalculo === 'com') { htmlNotasNecessarias += calculateMissingForPx(neededP1, [{n:'Questionário 1',w:1,m:10,v:p1q1},{n:'Questionário 2',w:1,m:10,v:p1q2},{n:'Avaliação Escrita 1',w:5,m:10,v:p1escritaCom}]); }
+                        htmlOutput += `<li>P1 (geral): <strong>${formatarNota(neededP1)}</strong></li>`;
+                        if (tipoCalculo === 'com') { htmlOutput += calculateMissingForPx(neededP1, [{n:'Questionário 1',w:1,m:10,v:p1q1},{n:'Questionário 2',w:1,m:10,v:p1q2},{n:'Avaliação Escrita 1',w:5,m:10,v:p1escritaCom}]); }
                     }
                     
-                    htmlNotasNecessarias += '</ul>';
-                    notasNecessariasDiv.innerHTML = htmlNotasNecessarias;
+                    htmlOutput += '</ul>';
+                    notasNecessariasDiv.innerHTML = htmlOutput;
                 }
             }
             resultadoDiv.style.display = 'block';
