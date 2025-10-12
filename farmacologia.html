@@ -52,27 +52,20 @@
                         <div class="sub-component-group">
                             <p class="sub-component-title">Ou calcule a Média de Outras Atividades P1:</p>
                             <div class="form-group">
-                                <label for="p1-ed-1">
-                                    <span>Estudo Dirigido 1</span>
+                                <label for="p1-antipark">
+                                    <span>Atividade Antiparkinsonianos</span>
                                     <span class="points-label">(10 pontos)</span>
                                 </label>
-                                <input type="number" id="p1-ed-1" min="0" max="10" step="0.01" placeholder="Nota do Estudo Dirigido 1">
+                                <input type="number" id="p1-antipark" min="0" max="10" step="0.01" placeholder="Nota da Atividade Antiparkinsonianos">
                             </div>
                             <div class="form-group">
-                                <label for="p1-painel-1">
-                                    <span>Painel Interativo 1</span>
+                                <label for="p1-choque">
+                                    <span>Atividade Choque Cardiogênico</span>
                                     <span class="points-label">(10 pontos)</span>
                                 </label>
-                                <input type="number" id="p1-painel-1" min="0" max="10" step="0.01" placeholder="Nota do Painel Interativo 1">
+                                <input type="number" id="p1-choque" min="0" max="10" step="0.01" placeholder="Nota da Atividade Choque Cardiogênico">
                             </div>
-                            <div class="form-group">
-                                <label for="p1-situacao-1">
-                                    <span>Situação Clínica Integrada 1</span>
-                                    <span class="points-label">(10 pontos)</span>
-                                </label>
-                                <input type="number" id="p1-situacao-1" min="0" max="10" step="0.01" placeholder="Nota da Situação Clínica Integrada 1">
-                            </div>
-                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -103,25 +96,18 @@
                         <div class="sub-component-group">
                             <p class="sub-component-title">Ou calcule a Média de Outras Atividades P2:</p>
                             <div class="form-group">
-                                <label for="p2-ed-2">
-                                    <span>Estudo Dirigido 2</span>
+                                <label for="p2-ativ-1">
+                                    <span>Atividade 1</span>
                                     <span class="points-label">(10 pontos)</span>
                                 </label>
-                                <input type="number" id="p2-ed-2" min="0" max="10" step="0.01" placeholder="Nota do Estudo Dirigido 2">
+                                <input type="number" id="p2-ativ-1" min="0" max="10" step="0.01" placeholder="Nota da Atividade 1">
                             </div>
                             <div class="form-group">
-                                <label for="p2-painel-2">
-                                    <span>Painel Interativo 2</span>
+                                <label for="p2-ativ-2">
+                                    <span>Atividade 2</span>
                                     <span class="points-label">(10 pontos)</span>
                                 </label>
-                                <input type="number" id="p2-painel-2" min="0" max="10" step="0.01" placeholder="Nota do Painel Interativo 2">
-                            </div>
-                            <div class="form-group">
-                                <label for="p2-situacao-2">
-                                    <span>Situação Clínica Integrada 2</span>
-                                    <span class="points-label">(10 pontos)</span>
-                                </label>
-                                <input type="number" id="p2-situacao-2" min="0" max="10" step="0.01" placeholder="Nota da Situação Clínica Integrada 2">
+                                <input type="number" id="p2-ativ-2" min="0" max="10" step="0.01" placeholder="Nota da Atividade 2">
                             </div>
                         </div>
                     </div>
@@ -176,16 +162,16 @@
             const maxWeightedSumOfMissing = missing.reduce((sum, c) => sum + (c.max * c.weight), 0);
 
             if (neededWeightedSum > maxWeightedSumOfMissing + 0.01) {
-                missing.forEach(comp => {
-                    html += `<li style="list-style-type: '→ '; padding-left: 10px;">${comp.name}: <strong>> ${comp.max}</strong> (Impossível)</li>`;
-                });
-                return html;
+                return false; // Sinaliza que é impossível
             }
 
             missing.forEach(comp => {
                 const proportion = maxWeightedSumOfMissing > 0 ? (comp.max * comp.weight) / maxWeightedSumOfMissing : 0;
-                const neededScore = maxWeightedSumOfMissing > 0 ? (neededWeightedSum * proportion) / comp.weight : 0;
-                html += `<li style="list-style-type: '→ '; padding-left: 10px;">${comp.name}: <strong>${formatarNota(Math.max(0, Math.min(comp.max, neededScore)))}</strong> (de ${comp.max})</li>`;
+                let neededScore = maxWeightedSumOfMissing > 0 ? (neededWeightedSum * proportion) / comp.weight : 0;
+                
+                neededScore = Math.max(0, Math.min(comp.max, neededScore)); // Garante que a nota esteja dentro dos limites
+
+                html += `<li style="list-style-type: '→ '; padding-left: 10px;">${comp.name}: <strong>${formatarNota(neededScore)}</strong> (de ${comp.max})</li>`;
 
                 if (comp.subs && comp.value === null) {
                     let currentSubSum = 0;
@@ -194,10 +180,9 @@
                     
                     if(missingSubs.length > 0) {
                         const neededSubSum = (neededScore * comp.subs.length) - currentSubSum;
-                        missingSubs.forEach((sub) => {
+                        missingSubs.forEach((sub, index) => {
                             const subNeeded = neededSubSum / missingSubs.length;
-                            const subIndex = comp.subs.indexOf(sub);
-                            const subName = comp.subNames[subIndex];
+                            const subName = comp.subNames[index];
                             html += `<li style="list-style-type: '↳'; padding-left: 25px;">${subName}: <strong>${formatarNota(Math.max(0,Math.min(sub.m, subNeeded)))}</strong> (de ${sub.m})</li>`;
                         });
                     }
@@ -207,22 +192,27 @@
         }
         
         function calcularNota() {
+            // P1
             let p1 = getNota('p1-completa');
-            let p2 = getNota('p2-completa');
             let p1AvalEscrita = getNota('p1-aval-escrita');
             let p1MediaOutras = getNota('p1-media-outras-final');
-            const p1Ed1 = getNota('p1-ed-1'), p1Painel1 = getNota('p1-painel-1'), p1Situacao1 = getNota('p1-situacao-1');
+            const p1Antipark = getNota('p1-antipark'), p1Choque = getNota('p1-choque');
+            
+            // P2
+            let p2 = getNota('p2-completa');
             let p2AvalEscrita = getNota('p2-avaliacao-escrita');
             let p2MediaOutras = getNota('p2-media-outras-final');
-            const p2Ed2 = getNota('p2-ed-2'), p2Painel2 = getNota('p2-painel-2'), p2Situacao2 = getNota('p2-situacao-2');
+            const p2Ativ1 = getNota('p2-ativ-1'), p2Ativ2 = getNota('p2-ativ-2');
 
-            if (p1MediaOutras === null && [p1Ed1, p1Painel1, p1Situacao1].every(n => n !== null)) {
-                p1MediaOutras = (p1Ed1 + p1Painel1 + p1Situacao1) / 3;
+            // Calcula sub-médias se não preenchidas
+            if (p1MediaOutras === null && [p1Antipark, p1Choque].every(n => n !== null)) {
+                p1MediaOutras = (p1Antipark + p1Choque) / 2;
             }
-            if (p2MediaOutras === null && [p2Ed2, p2Painel2, p2Situacao2].every(n => n !== null)) {
-                p2MediaOutras = (p2Ed2 + p2Painel2 + p2Situacao2) / 3;
+            if (p2MediaOutras === null && [p2Ativ1, p2Ativ2].every(n => n !== null)) {
+                p2MediaOutras = (p2Ativ1 + p2Ativ2) / 2;
             }
 
+            // Calcula P1 e P2 se não preenchidas
             if (p1 === null && p1AvalEscrita !== null && p1MediaOutras !== null) {
                 p1 = ((p1AvalEscrita * 5) + (p1MediaOutras * 2)) / 7;
             }
@@ -270,30 +260,36 @@
             } else {
                 notasNecessariasDiv.style.display = 'block';
 
-                let min_p1_w_sum = 0;
-                if (p1 !== null) { min_p1_w_sum = p1 * 7; }
+                let min_p1_w_sum = 0, p1_w_max_sum = 0;
+                if (p1 !== null) { min_p1_w_sum = p1 * 7; p1_w_max_sum = p1 * 7; }
                 else {
-                    if (p1AvalEscrita !== null) min_p1_w_sum += p1AvalEscrita * 5;
-                    if (p1MediaOutras !== null) { min_p1_w_sum += p1MediaOutras * 2; }
+                    if (p1AvalEscrita !== null) { min_p1_w_sum += p1AvalEscrita * 5; p1_w_max_sum += p1AvalEscrita * 5; } else { p1_w_max_sum += 10 * 5; }
+                    if (p1MediaOutras !== null) { min_p1_w_sum += p1MediaOutras * 2; p1_w_max_sum += p1MediaOutras * 2; }
                     else {
-                        let sub_sum = [p1Ed1, p1Painel1, p1Situacao1].filter(n=>n!==null).reduce((a,b)=>a+b,0);
-                        min_p1_w_sum += (sub_sum / 3) * 2;
+                        let sub_sum_min = [p1Antipark, p1Choque].filter(n=>n!==null).reduce((a,b)=>a+b,0);
+                        let sub_sum_max = sub_sum_min + ([p1Antipark, p1Choque].filter(n=>n===null).length * 10);
+                        min_p1_w_sum += (sub_sum_min / 2) * 2;
+                        p1_w_max_sum += (sub_sum_max / 2) * 2;
                     }
                 }
 
-                let min_p2_w_sum = 0;
-                if (p2 !== null) { min_p2_w_sum = p2 * 7; }
+                let min_p2_w_sum = 0, p2_w_max_sum = 0;
+                if (p2 !== null) { min_p2_w_sum = p2 * 7; p2_w_max_sum = p2 * 7; }
                 else {
-                    if (p2AvalEscrita !== null) min_p2_w_sum += p2AvalEscrita * 5;
-                    if (p2MediaOutras !== null) { min_p2_w_sum += p2MediaOutras * 2; }
+                    if (p2AvalEscrita !== null) { min_p2_w_sum += p2AvalEscrita * 5; p2_w_max_sum += p2AvalEscrita * 5; } else { p2_w_max_sum += 10 * 5; }
+                    if (p2MediaOutras !== null) { min_p2_w_sum += p2MediaOutras * 2; p2_w_max_sum += p2MediaOutras * 2; }
                      else {
-                        let sub_sum = [p2Ed2, p2Painel2, p2Situacao2].filter(n=>n!==null).reduce((a,b)=>a+b,0);
-                        min_p2_w_sum += (sub_sum / 3) * 2;
+                        let sub_sum_min = [p2Ativ1, p2Ativ2].filter(n=>n!==null).reduce((a,b)=>a+b,0);
+                        let sub_sum_max = sub_sum_min + ([p2Ativ1, p2Ativ2].filter(n=>n===null).length * 10);
+                        min_p2_w_sum += (sub_sum_min / 2) * 2;
+                        p2_w_max_sum += (sub_sum_max / 2) * 2;
                     }
                 }
                 
                 if ((min_p1_w_sum + min_p2_w_sum) / 14 >= PASSING_GRADE) {
                     notasNecessariasDiv.innerHTML = '<h4>Resultado:</h4><p class="aprovado-msg" style="font-weight: bold;">Parabéns, você já passou!</p>';
+                } else if ((p1_w_max_sum + p2_w_max_sum) / 14 < PASSING_GRADE) {
+                    notasNecessariasDiv.innerHTML = '<h4>Resultado:</h4><p class="reprovado-msg" style="font-weight: bold;">Com as notas atuais, não é possível atingir média 7.</p>';
                 } else {
                     let htmlOutput = '';
                     if (p1 !== null) { htmlOutput += `<p style="font-weight: bold;">P1 (geral): ${formatarNota(p1)}</p>`; }
@@ -302,11 +298,11 @@
 
                     const p1Components = [
                         { name: "Avaliação Escrita 1", value: p1AvalEscrita, weight: 5, max: 10 },
-                        { name: "Média de Outras Atividades P1", value: p1MediaOutras, weight: 2, max: 10, subs: [{v:p1Ed1, m:10},{v:p1Painel1, m:10},{v:p1Situacao1, m:10}], subNames: ['Estudo Dirigido 1', 'Painel Interativo 1', 'Situação Clínica Integrada 1']}
+                        { name: "Média de Outras Atividades P1", value: p1MediaOutras, weight: 2, max: 10, subs: [{v:p1Antipark, m:10},{v:p1Choque, m:10}], subNames: ['Atividade Antiparkinsonianos', 'Atividade Choque Cardiogênico']}
                     ];
                     const p2Components = [
                         { name: "Avaliação Escrita 2", value: p2AvalEscrita, weight: 5, max: 10 },
-                        { name: "Média de Outras Atividades P2", value: p2MediaOutras, weight: 2, max: 10, subs: [{v:p2Ed2, m:10},{v:p2Painel2, m:10},{v:p2Situacao2, m:10}], subNames: ['Estudo Dirigido 2', 'Painel Interativo 2', 'Situação Clínica Integrada 2']}
+                        { name: "Média de Outras Atividades P2", value: p2MediaOutras, weight: 2, max: 10, subs: [{v:p2Ativ1, m:10},{v:p2Ativ2, m:10}], subNames: ['Atividade 1', 'Atividade 2']}
                     ];
 
                     if (p1 !== null) {
