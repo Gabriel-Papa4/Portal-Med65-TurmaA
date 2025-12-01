@@ -431,7 +431,7 @@ footer p {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-bottom: 12px solid black;
+    border-bottom: 12px solid rgb(180, 138, 0);
     position: relative;
     z-index: 10;
 }
