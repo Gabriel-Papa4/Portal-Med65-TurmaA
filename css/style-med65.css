@@ -499,7 +499,7 @@ footer p {
 
 .portal-topic-card-small {
     background-color: #002153;
-    color: white;
+    color: rgb(180, 138, 0);
     flex: 1;
     padding: 18px 15px;
     border-radius: 30px;
